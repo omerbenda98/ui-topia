@@ -1,0 +1,21 @@
+.code-inputs {
+  display: flex;
+  width: 80vw;
+}
+.code-inputs .code-input {
+  width: 100%;
+  height: 400px; /* Adjust the height to your liking */
+  resize: none; /* Disables user resizing */
+  overflow-y: auto; /* Enables vertical scrollbar */
+  margin-bottom: 10px;
+  background-color: rgb(33, 33, 33);
+  margin: 3rem;
+  color: white;
+}
+.live-preview {
+  border: 1px solid #de0000;
+  padding: 5rem;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}

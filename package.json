@@ -15,6 +15,7 @@
     "@types/node": "20.6.2",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
+    "@types/styled-components": "^5.1.29",
     "bcrypt": "^5.1.1",
     "mongodb": "^6.1.0",
     "mongoose": "^7.5.2",
@@ -22,7 +23,7 @@
     "next-auth": "^4.23.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "styled-components": "^6.0.8",
+    "styled-components": "^6.1.0",
     "typescript": "5.2.2"
   },
   "devDependencies": {

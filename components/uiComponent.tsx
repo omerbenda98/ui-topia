@@ -1,20 +1,31 @@
 "use client";
 
-// components/UIComponent.tsx
-import "../styles/components_css/uiComponent.css";
 import React, { useState } from "react";
+import styled, { css } from "styled-components";
 
 type UIComponentProps = {
   html: string;
   css: string;
 };
 
+// Define the type for the props you expect to receive
+interface StyledComponentProps {
+  cssString: string;
+}
+
+// Use the interface to type the props in the styled component
+const StyledUIComponent = styled.div<StyledComponentProps>`
+  ${(props) => css`
+    ${props.cssString}
+  `}
+`;
+
 const UIComponent: React.FC<UIComponentProps> = ({ html, css }) => {
   const [isHtmlDisplayed, setIsHtmlDisplayed] = useState(true);
 
   return (
-    <div className="ui-component">
-      <style>{css}</style>
+    // Pass the CSS as a named prop to avoid conflicts with the styled-components props
+    <StyledUIComponent cssString={css} className="ui-component">
       <div className="component-display">
         <div dangerouslySetInnerHTML={{ __html: html }} />
       </div>
@@ -32,7 +43,7 @@ const UIComponent: React.FC<UIComponentProps> = ({ html, css }) => {
           <code>{isHtmlDisplayed ? html : css}</code>
         </pre>
       </div>
-    </div>
+    </StyledUIComponent>
   );
 };
 

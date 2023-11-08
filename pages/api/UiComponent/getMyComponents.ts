@@ -19,6 +19,7 @@ export default async function handler(
 
     // Get the user's session based on the request
     const session = await getSession({ req });
+
     if (!session || !session.user) {
       res.status(401).send("Unauthorized");
       return;

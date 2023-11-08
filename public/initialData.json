@@ -1,0 +1,65 @@
+[
+  {
+    "html": "<button class=\"firstButton\"> Button </button>",
+    "css": ".firstButton { background-color: #444141; border-radius: 4px; color: #fff; cursor: pointer; padding: 15px 30px; font-size: 18px; font-weight: bold; letter-spacing: 1px; border: none; }",
+    "type": "button",
+    "creator": "Omer Ben David",
+    "likes": []
+  },
+  {
+    "html": "<button class=\"secondButton\">BUTTON</button>",
+    "css": ".secondButton { --c: #fff; background: linear-gradient(90deg, #0000 33%, #fff5, #0000 67%) var(--_p,100%)/300% no-repeat, #004dff; color: #0000; border: none; transform: perspective(500px) rotateY(calc(20deg*var(--_i,-1))); text-shadow: calc(var(--_i,-1)* 0.08em) -.01em 0 var(--c), calc(var(--_i,-1)*-0.08em) .01em 2px #0004; outline-offset: .1em; transition: 0.3s; } .secondButton:hover, .secondButton:focus-visible { --_p: 0%; --_i: 1; } .secondButton:active { text-shadow: none; color: var(--c); box-shadow: inset 0 0 9e9q #0005; transition: 0s; } .secondButton { font-family: system-ui, sans-serif; font-weight: bold; font-size: 2rem; margin: 0; cursor: pointer; padding: .1em .3em; }",
+    "type": "button",
+    "creator": "Omer Ben David",
+    "likes": []
+  },
+  {
+    "html": "<button class=\"thirdButton\"><span class=\"transition\"></span><span class=\"gradient\"></span><span class=\"label\">Button</span></button>",
+    "css": ".thirdButton { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace; font-size: 17px; padding: 1em 2.7em; font-weight: 500; background: #1F2937; color: white; border: none; position: relative; overflow: hidden; border-radius: 0.6em; } .gradient { position: absolute; width: 100%; height: 100%; left: 0; top: 0; border-radius: 0.6em; margin-top: -0.25em; background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)); } .label { position: relative; top: -1px; } .transition { transition-timing-function: cubic-bezier(0, 0, 0.2, 1); transition-duration: 500ms; background-color: rgba(16, 185, 129, 0.6); border-radius: 9999px; width: 0; height: 0; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); } .thirdButton:hover .transition { width: 14em; height: 14em; } .thirdButton:active { transform: scale(0.97); }",
+    "type": "button",
+    "creator": "Omer Ben David",
+    "likes": []
+  },
+  {
+    "html": "<div class=\"card\"><div class=\"card-border-top\"></div><div class=\"img\"></div><span> Person</span><p class=\"job\"> Job Title</p><button> Click</button></div>",
+    "css": ".card { width: 190px; height: 254px; background: #3405a3; border-radius: 15px; box-shadow: 1px 5px 60px 0px #100a886b; } .card .card-border-top { width: 60%; height: 3%; background: #6b64f3; margin: auto; border-radius: 0px 0px 15px 15px; } .card span { font-weight: 600; color: white; text-align: center; display: block; padding-top: 10px; font-size: 16px; } .card .job { font-weight: 400; color: white; display: block; text-align: center; padding-top: 3px; font-size: 12px; } .card .img { width: 70px; height: 80px; background: #6b64f3; border-radius: 15px; margin: auto; margin-top: 25px; } .card button { padding: 8px 25px; display: block; margin: auto; border-radius: 8px; border: none; margin-top: 30px; background: #6b64f3; color: white; font-weight: 600; } .card button:hover { background: #534bf3; }",
+    "type": "card",
+    "creator": "Omer Ben David",
+    "likes": []
+  },
+  {
+    "html": "<div class=\"cards\"><figure class=\"card\"><figcaption class=\"card_title\">3D Hover</figcaption></figure></div>",
+    "css": ".cards { perspective: 500px; } .card { width: 200px; height: 250px; background: #16161d; border: 2px solid #555555; border-radius: 4px; position: relative; transform-style: preserve-3d; will-change: transform; transition: transform .5s; } .card:hover { transform: translateZ(10px) rotateX(20deg) rotateY(20deg); } .card_title { color: #fff; position: absolute; top: 50%; right: 20px; transform: translateY(-50%); transition: transform .5s; font: 700 1.5rem monospace; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; } .card:hover .card_title { transform: translateZ(50px); }",
+    "type": "card",
+    "creator": "Omer Ben David",
+    "likes": []
+  },
+  {
+    "html": "<div class=\"flip-card\"><div class=\"flip-card-inner\"><div class=\"flip-card-front\"><p class=\"title\">FLIP CARD</p><p>Hover Me</p></div><div class=\"flip-card-back\"><p class=\"title\">BACK</p><p>Leave Me</p></div></div></div>",
+    "css": ".flip-card { background-color: transparent; width: 190px; height: 254px; perspective: 1000px; font-family: sans-serif; } .title { font-size: 1.5em; font-weight: 900; text-align: center; margin: 0; } .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; } .flip-card:hover .flip-card-inner { transform: rotateY(180deg); } .flip-card-front, .flip-card-back { box-shadow: 0 8px 14px 0 rgba(0,0,0,0.2); position: absolute; display: flex; flex-direction: column; justify-content: center; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border: 1px solid coral; border-radius: 1rem; } .flip-card-front { background: linear-gradient(120deg, bisque 60%, rgb(255, 231, 222) 88%, rgb(255, 211, 195) 40%, rgba(255, 127, 80, 0.603) 48%); color: coral; } .flip-card-back { background: linear-gradient(120deg, rgb(255, 174, 145) 30%, coral 88%, bisque 40%, rgb(255, 185, 160) 78%); color: white; transform: rotateY(180deg); }",
+    "type": "card",
+    "creator": "Omer Ben David",
+    "likes": []
+  },
+  {
+    "html": "<form class=\"form\"><input placeholder=\"Enter your name\" class=\"input\" type=\"text\"><input placeholder=\"Enter your email\" class=\"input\" type=\"text\"><input placeholder=\"*********\" class=\"input\" type=\"password\"><button>Submit</button></form>",
+    "css": ".form { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 20px; background: linear-gradient(to bottom, #0077be, #3b8df2); border-radius: 10px; overflow: hidden; perspective: 1000px; transform-style: preserve-3d; transform: rotateX(-10deg); transition: all 0.3s ease-in-out; box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; animation: form-animation 0.5s ease-in-out; } @keyframes form-animation { from { transform: rotateX(-30deg); opacity: 0; } to { transform: rotateX(0deg); opacity: 1; } } .input { padding: 10px; border-radius: 5px; background-color: transparent; transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; transform-style: preserve-3d; backface-visibility: hidden; color: rgb(255, 255, 255); border: 2px solid #3b8df2; box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; } .input::placeholder { color: #fff; } .input:hover, .input:focus { border-color: #3b8df2; background-color: rgba(255, 255, 255, 0.2); transform: scale(1.05) rotateY(20deg); box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3); outline: none; } button { padding: 10px 20px; border: none; border-radius: 5px; background-color: #3b8df2; color: #fff; font-size: 16px; cursor: pointer; transform-style: preserve-3d; backface-visibility: hidden; transform: rotateX(-10deg); transition: all 0.3s ease-in-out; box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; } button:hover { background-color: #0077be; font-size: 17px; transform: scale(1.05) rotateY(20deg) rotateX(10deg); box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; }",
+    "type": "form",
+    "creator": "Omer Ben David",
+    "likes": []
+  },
+  {
+    "html": "<div class=\"main\"><input type=\"checkbox\" id=\"chk\" aria-hidden=\"true\"><div class=\"login\"><form class=\"form\"><label for=\"chk\" aria-hidden=\"true\">Log in</label><input class=\"input\" type=\"email\" name=\"email\" placeholder=\"Email\" required=\"\"><input class=\"input\" type=\"password\" name=\"pswd\" placeholder=\"Password\" required=\"\"><button>Log in</button></form></div><div class=\"register\"><form class=\"form\"><label for=\"chk\" aria-hidden=\"true\">Register</label><input class=\"input\" type=\"text\" name=\"txt\" placeholder=\"Username\" required=\"\"><input class=\"input\" type=\"email\" name=\"email\" placeholder=\"Email\" required=\"\"><input class=\"input\" type=\"password\" name=\"pswd\" placeholder=\"Password\" required=\"\"><button>Register</button></form></div></div>",
+    "css": ".main { position: relative; display: flex; flex-direction: column; background-color: #240046; max-height: 20rem; overflow: hidden; border-radius: 12px; box-shadow: 7px 7px 10px 3px #24004628; } .form { display: flex; flex-direction: column; gap: 14px; padding: 24px; } #chk { display: none; } .login { position: relative; width: 100%; height: 100%; } .login label { margin: 25% 0 5%; } label { color: #fff; font-size: 2rem; justify-content: center; display: flex; font-weight: bold; cursor: pointer; transition: .5s ease-in-out; } .input { width: 100%; height: 40px; background: #e0dede; padding: 10px; border: none; outline: none; border-radius: 4px; } .register { background: #eee; border-radius: 60% / 10%; transform: translateY(5%); transition: .8s ease-in-out; } .register label { color: #573b8a; transform: scale(.6); } #chk:checked ~ .register { transform: translateY(-60%); } #chk:checked ~ .register label { transform: scale(1); margin: 10% 0 5%; } #chk:checked ~ .login label { transform: scale(.6); margin: 5% 0 5%; } .form button { width: 85%; height: 40px; margin: 12px auto 10%; color: #fff; background: #573b8a; font-size: 1rem; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; transition: .2s ease-in; } .form button:hover { background-color: #6d44b8; }",
+    "type": "form",
+    "creator": "Omer Ben David",
+    "likes": []
+  },
+  {
+    "html": "<div class=\"form-container\"><form class=\"form\"><div class=\"form-group\"><label for=\"email\">Company Email</label><input type=\"text\" id=\"email\" name=\"email\" required=\"\"></div><div class=\"form-group\"><label for=\"textarea\">How Can We Help You?</label><textarea name=\"textarea\" id=\"textarea\" rows=\"10\" cols=\"50\" required=\"\"></textarea></div><button class=\"form-submit-btn\" type=\"submit\">Submit</button></form></div>",
+    "css": ".form-container { width: 400px; background: linear-gradient(#212121, #212121) padding-box, linear-gradient(145deg, transparent 35%,#e81cff, #40c9ff) border-box; border: 2px solid transparent; padding: 32px 24px; font-size: 14px; font-family: inherit; color: white; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; border-radius: 16px; } .form-container button:active { scale: 0.95; } .form-container .form { display: flex; flex-direction: column; gap: 20px; } .form-container .form-group { display: flex; flex-direction: column; gap: 2px; } .form-container .form-group label { display: block; margin-bottom: 5px; color: #717171; font-weight: 600; font-size: 12px; } .form-container .form-group input, .form-container .form-group textarea { width: 100%; padding: 12px 16px; border-radius: 8px; color: #fff; background-color: transparent; border: 1px solid #414141; font-family: inherit; } .form-container .form-group textarea { height: 96px; resize: none; } .form-container .form-group input::placeholder, .form-container .form-group textarea::placeholder { opacity: 0.5; } .form-container .form-group input:focus, .form-container .form-group textarea:focus { outline: none; border-color: #e81cff; } .form-container .form-submit-btn { display: flex; align-items: flex-start; justify-content: center; align-self: flex-start; font-family: inherit; color: #717171; font-weight: 600; width: 40%; background: #313131; border: 1px solid #414141; padding: 12px 16px; font-size: inherit; gap: 8px; margin-top: 8px; cursor: pointer; border-radius: 6px; } .form-container .form-submit-btn:hover { background-color: #fff; border-color: #fff; }",
+    "type": "form",
+    "creator": "Omer Ben David",
+    "likes": []
+  }
+]

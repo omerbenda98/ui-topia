@@ -1,10 +1,14 @@
 "use client";
 
+import { useSession } from "next-auth/react";
+
 import Feed from "@components/Feed";
 import React, { useEffect, useState } from "react";
 
 const MyComps = () => {
   const [myComponentsData, setMyComponentsData] = useState([]);
+  const [likedComponents, setLikedComponents] = useState([]);
+  const { data: session, status } = useSession();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,7 +25,11 @@ const MyComps = () => {
 
   return (
     <div>
-      <Feed components={myComponentsData} />
+      <Feed
+        components={myComponentsData}
+        likedComponents={likedComponents}
+        userid={session && session.user.id}
+      />
     </div>
   );
 };

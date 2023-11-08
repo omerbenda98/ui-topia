@@ -1,6 +1,11 @@
 import { Schema, model, models } from "mongoose";
 import mongoose from "mongoose";
 
+interface IUiComp extends mongoose.Document {
+  // ... other fields ...
+  likes: mongoose.Types.ObjectId[];
+}
+
 const UiCompSchema = new Schema({
   html: {
     type: String,
@@ -18,10 +23,15 @@ const UiCompSchema = new Schema({
   creatorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User", // Referencing the User model
-    required: true,
   },
+  likes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
-const UiComp = models.UiComp || model("UiComp", UiCompSchema);
+const UiComp = models.UiComp || model<IUiComp>("UiComp", UiCompSchema);
 
 export default UiComp;

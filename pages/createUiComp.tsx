@@ -20,6 +20,7 @@ const CreateUiComp: FC = () => {
         html: htmlCode,
         css: cssCode,
         type: componentType,
+        likes: [],
         creatorId: session?.user?.id,
       };
 

@@ -1,16 +1,16 @@
 // components/Feed.tsx
 import UIComponent from "./uiComponent";
-
-type ComponentData = {
-  html: string;
-  css: string;
-};
+import { component } from "@utils/component";
 
 type FeedProps = {
-  components: ComponentData[];
+  components: component[];
+  likedComponents: component[];
+  userid: string | null;
 };
 
-const Feed: React.FC<FeedProps> = ({ components }) => {
+const Feed: React.FC<FeedProps> = ({ components, likedComponents, userid }) => {
+  const likedComponentIds = likedComponents.map((comp) => comp._id);
+
   return (
     <div className="feed">
       {components.map((componentData, index) => (
@@ -18,6 +18,11 @@ const Feed: React.FC<FeedProps> = ({ components }) => {
           key={index}
           html={componentData.html}
           css={componentData.css}
+          _id={componentData._id}
+          type={componentData.type}
+          userid={userid}
+          likes={componentData.likes}
+          likedComponents={likedComponents}
         />
       ))}
     </div>

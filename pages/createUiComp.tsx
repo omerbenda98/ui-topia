@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, FC } from "react";
+import React, { useState, useEffect, ChangeEvent, FC } from "react";
 import "../styles/pages_css/createUiComp.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -11,6 +11,7 @@ const CreateUiComp: FC = () => {
   const [htmlCode, setHtmlCode] = useState<string>("");
   const [cssCode, setCssCode] = useState<string>("");
   const [componentType, setComponentType] = useState<string>("button"); // Set default type to "button"
+  const [selectedOption, setSelectedOption] = useState<string>("button");
 
   const handleShareComponent = async () => {
     if (status === "authenticated" && session?.user?.name) {
@@ -41,6 +42,10 @@ const CreateUiComp: FC = () => {
         console.error("Error saving component:", error.message);
       }
     }
+  };
+  const handleOptionChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setComponentType(event.target.value);
+    setSelectedOption(event.target.value);
   };
 
   if (status === "loading") {
@@ -75,7 +80,7 @@ const CreateUiComp: FC = () => {
         dangerouslySetInnerHTML={{ __html: htmlCode }}
       />
       <style>{cssCode}</style>
-      <div className="type-selection">
+      {/* <div className="type-selection">
         <label htmlFor="component-type">Type:</label>
         <select
           id="component-type"
@@ -88,8 +93,52 @@ const CreateUiComp: FC = () => {
           <option value="inputs">Inputs</option>
           <option value="card">Card</option>
         </select>
+      </div> */}
+      <div className="wrapper">
+        <div className="option">
+          <input
+            checked={selectedOption === "button"}
+            onChange={handleOptionChange}
+            value="button"
+            name="btn"
+            type="radio"
+            className="input"
+          />
+          <div className="btn">
+            <span className="span">Button</span>
+          </div>
+        </div>
+        <div className="option">
+          <input
+            checked={selectedOption === "form"}
+            onChange={handleOptionChange}
+            value="form"
+            name="btn"
+            type="radio"
+            className="input"
+          />
+          <div className="btn">
+            <span className="span">Form</span>
+          </div>{" "}
+        </div>
+        <div className="option">
+          <input
+            checked={selectedOption === "card"}
+            onChange={handleOptionChange}
+            value="card"
+            name="btn"
+            type="radio"
+            className="input"
+          />
+          <div className="btn">
+            <span className="span">Card</span>
+          </div>
+        </div>
       </div>
-      <button onClick={handleShareComponent}>Share Component</button>
+
+      <button onClick={handleShareComponent} className="outline_btn">
+        Share Component
+      </button>
     </div>
   );
 };

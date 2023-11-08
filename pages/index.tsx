@@ -7,6 +7,8 @@ import { useSession } from "next-auth/react";
 import TypeSelect from "@components/TypeSelect";
 import { ComponentType } from "@utils/componentType";
 import { component } from "@utils/component";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home: React.FC = () => {
   const [componentsData, setComponentsData] = useState<component[]>([]);
@@ -94,6 +96,7 @@ const Home: React.FC = () => {
         likedComponents={likedComponents}
         userid={session && session.user.id}
       />
+      <ToastContainer />
     </section>
   );
 };

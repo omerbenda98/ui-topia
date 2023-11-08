@@ -48,6 +48,9 @@ const Nav: FC = () => {
             <Link href="/createUiComp" className="black_btn">
               Share Component
             </Link>
+            <Link href="/likedPage" className="outline_btn">
+              Liked Components
+            </Link>
             <Link href="/MyComps" className="outline_btn">
               My Components
             </Link>

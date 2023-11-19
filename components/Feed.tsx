@@ -6,11 +6,15 @@ type FeedProps = {
   components: component[];
   likedComponents: component[];
   userid: string | null;
+  onComponentSelect: (selectedComponent: component) => void;
 };
 
-const Feed: React.FC<FeedProps> = ({ components, likedComponents, userid }) => {
-  const likedComponentIds = likedComponents.map((comp) => comp._id);
-
+const Feed: React.FC<FeedProps> = ({
+  components,
+  likedComponents,
+  userid,
+  onComponentSelect,
+}) => {
   return (
     <div className="feed">
       {components.map((componentData, index) => (
@@ -23,6 +27,7 @@ const Feed: React.FC<FeedProps> = ({ components, likedComponents, userid }) => {
           userid={userid}
           likes={componentData.likes}
           likedComponents={likedComponents}
+          onComponentSelect={onComponentSelect}
         />
       ))}
     </div>

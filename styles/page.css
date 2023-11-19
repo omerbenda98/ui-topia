@@ -42,3 +42,11 @@
 /* .nav-image {
   width: 5rem;
 } */
+@media screen and (max-width: 600px) {
+  .section {
+    width: 100vw;
+    box-sizing: border-box; /* This ensures padding/border are included in width */
+    margin: 0;
+    padding: 0;
+  }
+}

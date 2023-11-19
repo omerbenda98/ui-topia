@@ -9,12 +9,24 @@ import { ComponentType } from "@utils/componentType";
 import { component } from "@utils/component";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ViewCode from "@components/ViewCode";
 
 const Home: React.FC = () => {
   const [componentsData, setComponentsData] = useState<component[]>([]);
   const [likedComponents, setLikedComponents] = useState([]);
   const [selectedType, setSelectedType] = useState(ComponentType.All);
+  const [selectedComponent, setSelectedComponent] = useState<component | null>(
+    null
+  );
   const { data: session, status } = useSession();
+
+  // Handler to update the selected component
+  const handleComponentSelect = (component: component) => {
+    setSelectedComponent(component);
+  };
+  const handleCancelComponentSelect = () => {
+    setSelectedComponent(null);
+  };
 
   useEffect(() => {
     const fetchComponents = async () => {
@@ -70,9 +82,6 @@ const Home: React.FC = () => {
     setSelectedType(type);
   };
 
-  useEffect(() => {
-    console.log("Selected Type has changed to:", selectedType);
-  }, [selectedType]);
   const filteredComponents = componentsData.filter((component) => {
     return (
       selectedType === ComponentType.All || component.type === selectedType
@@ -81,22 +90,34 @@ const Home: React.FC = () => {
 
   return (
     <section className="section">
-      <h1 className="heading">
-        Discover & Share
-        <br />
-        <span className="gradient-text"> Ui - Components</span>
-      </h1>
-      <p className="description">
-        UI-topia is an open-source UI Components app for the modern world to
-        discover, create, and share creative Components using only html and css
-      </p>
-      <TypeSelect onTypeSelect={handleTypeSelect} />
-      <Feed
-        components={filteredComponents}
-        likedComponents={likedComponents}
-        userid={session && session.user.id}
-      />
-      <ToastContainer />
+      {/* Conditional rendering based on whether a component is selected */}
+      {selectedComponent ? (
+        <ViewCode
+          component={selectedComponent}
+          cancelComponentSelect={handleCancelComponentSelect}
+        />
+      ) : (
+        <>
+          <h1 className="heading">
+            Discover & Share
+            <br />
+            <span className="gradient-text">Ui - Components</span>
+          </h1>
+          <p className="description">
+            UI-topia is an open-source UI Components app for the modern world to
+            discover, create, and share creative Components using only html and
+            css
+          </p>
+          <TypeSelect onTypeSelect={handleTypeSelect} />
+          <Feed
+            components={filteredComponents}
+            likedComponents={likedComponents}
+            userid={session && session.user.id}
+            onComponentSelect={handleComponentSelect}
+          />
+          <ToastContainer />
+        </>
+      )}
     </section>
   );
 };

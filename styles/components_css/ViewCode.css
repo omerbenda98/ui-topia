@@ -1,0 +1,60 @@
+.live-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-image: linear-gradient(to right, #818181, #565656, #2c2c2c);
+  padding: 1rem;
+  flex: 1;
+  overflow: auto;
+}
+
+.code-display-container {
+  display: flex;
+  width: 80vw; /* Use 100% of the viewport width */
+  height: 100%; /* Use 100% of the viewport height */
+  border: 3px solid black;
+  box-shadow: 0.8em 0.8em 0.8em rgba(0, 0, 0, 0.6);
+}
+
+.code-toggle-container {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-toggle-container button {
+  margin-bottom: 1rem;
+}
+
+.code-display-container .code-block {
+  width: 90%;
+  height: 400px; /* Adjust the height to your liking */
+  overflow-x: auto; /* Horizontal scrollbar if needed */
+  overflow-y: auto; /* Vertical scrollbar if needed */
+  white-space: pre-wrap; /* Maintains whitespace but wraps text */
+  word-wrap: break-word; /* Breaks long words onto the next line */
+  background-color: rgb(33, 33, 33);
+
+  padding: 1rem; /* Add padding to prevent text from touching the borders */
+  color: white;
+  border-radius: 4px; /* Optional: Rounds the corners of the block */
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro",
+    monospace;
+  font-size: 0.8rem;
+}
+
+/* Styles for buttons, you can customize them further */
+.code-toggle-container button {
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.code-toggle-container button:hover {
+  background-color: #555;
+}

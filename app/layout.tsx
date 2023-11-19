@@ -17,10 +17,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
         <div className="gradient" />
       </div>
 
-      <main className="app">
-        {/* <Nav /> */}
-        {children}
-      </main>
+      <main className="app">{children}</main>
     </div>
   );
 };

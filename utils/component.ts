@@ -6,4 +6,5 @@ export type component = {
   userid: string | null;
   likedComponents: component[];
   likes: string[];
+  onComponentSelect: (selectedComponent: component) => void;
 };

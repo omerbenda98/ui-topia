@@ -37,7 +37,6 @@ const CreateUiComp: FC = () => {
           throw new Error(data.error);
         }
         router.push("/");
-        console.log("Component saved:", data);
       } catch (error: any) {
         console.error("Error saving component:", error.message);
       }

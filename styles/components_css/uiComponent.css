@@ -70,7 +70,7 @@
   overflow: hidden; /* Ensures that the content does not overflow */
   margin: 1rem;
   padding-bottom: 3rem; /* Add some padding for better spacing */
-  min-width: 29rem; /* Minimum width */
+
   max-width: 29rem; /* Maximum width */
   min-height: 400px; /* Minimum height */
   max-height: 400px; /* Maximum height */
@@ -78,4 +78,22 @@
 .middleButtons {
   display: flex;
   gap: 5rem;
+}
+@media screen and (max-width: 600px) {
+  .ui-component {
+    /* Adjust card styles for mobile */
+    width: 100vw;
+    box-sizing: border-box; /* This ensures padding/border are included in width */
+    margin: 0;
+    padding: 0;
+  }
+  .component-display {
+    width: 80%;
+  }
+  .ui-component .code-display {
+    overflow-y: auto; /* allows scrolling */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
 }

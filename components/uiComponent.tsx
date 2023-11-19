@@ -9,6 +9,8 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import IconButton from "@mui/material/IconButton";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
+
 // Use the interface to type the props in the styled component
 const StyledUIComponent = styled.div<{ $cssstring: string }>`
   ${({ $cssstring }) => css`
@@ -23,10 +25,32 @@ const UIComponent: React.FC<component> = ({
   type,
   likedComponents,
   likes,
+  onComponentSelect,
 }) => {
   const [isHtmlDisplayed, setIsHtmlDisplayed] = useState(true);
   const [likesAmount, setLikesAmount] = useState(likes.length);
   const [copySuccess, setCopySuccess] = useState("");
+
+  const handleViewButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    // Prevent default action if needed
+    event.preventDefault();
+
+    const selectedComponentData = {
+      _id,
+      html,
+      css,
+      userid,
+      type,
+      likedComponents,
+      likes,
+      onComponentSelect,
+    };
+
+    // Call onComponentSelect with the constructed component data
+    onComponentSelect(selectedComponentData);
+  };
 
   const copyToClipboard = (code: string) => {
     navigator.clipboard
@@ -87,9 +111,7 @@ const UIComponent: React.FC<component> = ({
       <div className="component-display">
         <div dangerouslySetInnerHTML={{ __html: html }} />
       </div>
-
       {/* Buttons to toggle between HTML and CSS */}
-
       <div className="toggle-buttons">
         <IconButton
           aria-label="copy"
@@ -138,6 +160,19 @@ const UIComponent: React.FC<component> = ({
         likedComponents={likedComponents}
       />
       <div>{likesAmount}</div>
+      <Link
+        href={{
+          pathname: "/viewCode",
+          query: {
+            html: encodeURIComponent(html),
+            css: encodeURIComponent(css),
+          },
+        }}
+      >
+        <button className="black_btn" onClick={handleViewButtonClick}>
+          View code
+        </button>
+      </Link>{" "}
       {/* Code Display Section */}
       <div className="code-display">
         <h4>{isHtmlDisplayed ? "HTML" : "CSS"}</h4>

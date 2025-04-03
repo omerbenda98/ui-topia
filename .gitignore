@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/selenium-tests/selenium-env
 /.pnp
 .pnp.js
 

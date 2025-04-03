@@ -3,6 +3,14 @@ pipeline {
     
     stages {
         
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    # Install required Python packages
+                    pip install selenium pytest pytest-html webdriver-manager
+                '''
+            }
+        }
         stage('Build') {
             steps {
                 echo 'Building the application...'

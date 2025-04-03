@@ -12,7 +12,16 @@ pipeline {
             }
         }
         
-
+        stage('Run App with Docker Compose ') {
+            steps {
+                echo 'Running app with Docker Compose...'
+                sh '''
+                    docker-compose down || true
+                    docker-compose up -d
+                '''
+            }
+        }
+        
         stage('Test') {
             steps {
                 echo 'Testing...'

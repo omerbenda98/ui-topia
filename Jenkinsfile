@@ -22,10 +22,15 @@ pipeline {
             }
         }
         
-        stage('Test') {
+        stage('Run Tests') {
             steps {
                 echo 'Testing...'
-                // sh 'python3 selenium-tests/test.py'
+                    sh '''
+                    python3 -m venv .venv
+                    . .venv/bin/activate
+                    pip install -r selenium-tests/requirements.txt
+                    pytest selenium-tests/test_uitopia.py
+                '''
             }
         }
 

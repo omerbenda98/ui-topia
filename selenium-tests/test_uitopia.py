@@ -26,7 +26,7 @@ class SimpleLoadTest(unittest.TestCase):
     def test_app_loads(self):
         """Test that the web app loads successfully"""
         # Replace with your actual Windows IP address if needed
-        url = "http://10.0.0.14:3000"
+        url = "http://jenkins.benda.wiki"
         
         logger.info(f"Trying to connect to: {url}")
         self.driver.get(url)

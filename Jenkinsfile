@@ -1,47 +1,76 @@
 pipeline {
     agent any
-    
+    environment {
+        IMAGE_NAME = 'omerbenda98/ui_topia'
+        VERSION = "${BUILD_NUMBER}"
+        email = 'omerbenda98@gmail.com'
+    }
     stages {
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
                 sh '''
                     docker build -t myapp .
-                    
                 '''
             }
         }
-        
-        stage('Run App with Docker Compose ') {
+        stage('Run app with Docker compose') {
             steps {
-                echo 'Running app with Docker Compose...'
                 sh '''
-                    docker-compose down || true
-                    docker-compose up -d
+                    docker compose down || true
+                    docker compose up -d
                 '''
             }
         }
-        
-        stage('Run tests') {
+        stage('Run Tests') {
             steps {
-                echo 'Testing...'
-                    sh '''
+                sh '''
                     python3 -m venv .venv
                     . .venv/bin/activate
                     pip install -r selenium-tests/requirements.txt
-                    pytest selenium-tests/test_uitopia.py
+                    pytest ./selenium-tests
                 '''
             }
         }
-
-        stage('Deploy') {
+        stage('Push Docker Image') {
             steps {
-                echo 'Deploying...'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    script {
+                        docker.withRegistry('', 'docker-hub') {
+                            docker.image("${IMAGE_NAME}").push("${VERSION}")
+                            docker.image("${IMAGE_NAME}").push('latest')    
+                        }
+                    }
+                   }
+                }
+            }
+        }
+        post {
+             failure {
+                emailext(
+                    subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
+                    mimeType: 'text/html',
+                    to: "$email",
+                    body: "${JOB_NAME}.${BUILD_NUMBER} FAILED"
+                )
+            }
+            success {
+                emailext(
+                    subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
+                    mimeType: 'text/html',
+                    to: "$email",
+                    body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
+                )
+            }
+            always {
+                sh '''
+                    docker compose down || true
+                '''
             }
         }
     }
 
-}
+
+
 // pipeline {
 //     agent any
     

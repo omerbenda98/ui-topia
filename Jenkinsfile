@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'node1' 
+    }
     environment {
         IMAGE_NAME = 'omerbenda98/ui_topia'
         VERSION = "${BUILD_NUMBER}"

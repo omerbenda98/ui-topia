@@ -17,7 +17,7 @@ pipeline {
                 '''
             }
         }
-        stage('Run app with Docker Compose') {
+        stage('Run app with Docker compose') {
             steps {
                 sh '''
                     docker compose down || true

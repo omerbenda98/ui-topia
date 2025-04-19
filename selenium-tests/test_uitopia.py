@@ -59,7 +59,7 @@ class UITopiaCoreTests(unittest.TestCase):
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         
         # Log page info
-        logger.info(f"Page title: {self.driver.title}")
+        logger.info(f"Page Title: {self.driver.title}")
         
         # Basic check that some content loaded
         body_text = self.driver.find_element(By.TAG_NAME, "body").text

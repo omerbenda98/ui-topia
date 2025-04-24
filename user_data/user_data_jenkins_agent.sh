@@ -22,8 +22,16 @@ wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-ke
 sudo sh -c 'echo "deb https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 sudo apt-get update
 sudo apt-get install google-chrome-stable -y
-# Install ChromeDriver
-sudo apt-get install -y chromium-chromedriver
+# Install unzip and wget
+sudo apt-get install -y unzip wget
+
+# Install ChromeDriver directly for Chrome 135
+# Using a direct approach with a known URL pattern
+wget https://storage.googleapis.com/chrome-for-testing-public/135.0.7049.114/linux64/chromedriver-linux64.zip
+unzip chromedriver-linux64.zip
+sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+sudo chmod +x /usr/local/bin/chromedriver
+rm -rf chromedriver-linux64.zip chromedriver-linux64
 # Create Jenkins workspace
 sudo mkdir -p /home/ubuntu/jenkins
 sudo chown ubuntu:ubuntu /home/ubuntu/jenkins

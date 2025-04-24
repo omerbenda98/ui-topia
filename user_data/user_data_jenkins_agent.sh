@@ -23,13 +23,7 @@ sudo sh -c 'echo "deb https://dl.google.com/linux/chrome/deb/ stable main" >> /e
 sudo apt-get update
 sudo apt-get install google-chrome-stable -y
 # Install ChromeDriver
-sudo apt-get install -y unzip
-CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1-3)
-wget -N https://storage.googleapis.com/chrome-for-testing-public/$CHROME_VERSION/linux64/chromedriver-linux64.zip
-unzip chromedriver-linux64.zip
-sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
-sudo chmod +x /usr/local/bin/chromedriver
-rm -rf chromedriver-linux64.zip chromedriver-linux64
+sudo apt-get install -y chromium-chromedriver
 # Create Jenkins workspace
 sudo mkdir -p /home/ubuntu/jenkins
 sudo chown ubuntu:ubuntu /home/ubuntu/jenkins

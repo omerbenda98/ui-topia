@@ -7,6 +7,11 @@ pipeline {
         VERSION = "${BUILD_NUMBER}"
         email = 'omerbenda98@gmail.com'
         SLACK_CHANNEL = '#devops'
+        REMOTE_USER = 'ubuntu'
+        REMOTE_HOST = ''
+        REMOTE_HOST_STAGE = '3.93.213.72'  // Add your staging server IP
+        DB_HOST = 'db'
+        CONTAINER_NAME = 'ui_topia'
     }
     stages {
         stage('Build Docker Image') {
@@ -46,10 +51,56 @@ pipeline {
                     }
                    }
                 }
+        } 
+         stage('Deploy to Staging') {
+            when { not { branch 'main' } }
+            steps {
+                withCredentials([
+                    string(credentialsId: 'mongodb-uri', variable: 'MONGODB_URI'),
+                    string(credentialsId: 'nextauth-secret', variable: 'NEXTAUTH_SECRET'),
+                    string(credentialsId: 'google-id', variable: 'GOOGLE_ID'),
+                    string(credentialsId: 'google-client-secret', variable: 'GOOGLE_CLIENT_SECRET')
+                ]) {
+                    sshagent(credentials: ['node1']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_STAGE} "\
+                            # Stop and remove existing container if it exists
+                            docker stop ${CONTAINER_NAME} 2>/dev/null || true
+                            docker rm ${CONTAINER_NAME} 2>/dev/null || true
+                            
+                            # Pull the latest image
+                            docker pull ${IMAGE_NAME}:${VERSION}
+                            
+                            # Run with parameters
+                            docker run -d --name ${CONTAINER_NAME} \
+                              -e MONGODB_URI='${MONGODB_URI}' \
+                              -e NEXTAUTH_URL='http://localhost:3000' \
+                              -e NEXTAUTH_URL_INTERNAL='http://localhost:3000' \
+                              -e NEXTAUTH_SECRET='${NEXTAUTH_SECRET}' \
+                              -e GOOGLE_ID='${GOOGLE_ID}' \
+                              -e GOOGLE_CLIENT_SECRET='${GOOGLE_CLIENT_SECRET}' \
+                              -p 3000:3000 \
+                              --restart always \
+                              ${IMAGE_NAME}:${VERSION}"
+                        """
+                    }
+                }
             }
         }
+        // stage('Deploy to Production') {
+        //     steps {
+        //         script {
+
+        //             sshagent(credentials: ['node1']) {
+        //                 sh """
+        //                     ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "docker pull ${IMAGE_NAME} && docker run -d --name myapp -p 3000:3000 ${IMAGE_NAME}"
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
         post {
-        failure {
+            failure {
             // emailext(
             //     subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
             //     mimeType: 'text/html',
@@ -61,8 +112,8 @@ pipeline {
                 color: 'danger',
                 message: "BUILD FAILED: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})"
             )
-        }
-        success {
+            }
+            success {
             // emailext(
             //     subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
             //     mimeType: 'text/html',
@@ -74,12 +125,13 @@ pipeline {
                 color: 'good',
                 message: "BUILD SUCCESSFUL: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})"
             )
-        }
-        always {
+            }
+            always {
             sh '''
                 docker compose down || true
             '''
-        }
+            }
     }
     }
 
+}

@@ -49,10 +49,10 @@ pipeline {
                             docker.image("${IMAGE_NAME}").push('latest')    
                         }
                     }
-                   }
                 }
-        } 
-         stage('Deploy to Staging') {
+            }
+        }
+        stage('Deploy to Staging') {
             when { not { branch 'main' } }
             steps {
                 withCredentials([
@@ -87,51 +87,26 @@ pipeline {
                 }
             }
         }
-        // stage('Deploy to Production') {
-        //     steps {
-        //         script {
-
-        //             sshagent(credentials: ['node1']) {
-        //                 sh """
-        //                     ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "docker pull ${IMAGE_NAME} && docker run -d --name myapp -p 3000:3000 ${IMAGE_NAME}"
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
-        post {
-            failure {
-            // emailext(
-            //     subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
-            //     mimeType: 'text/html',
-            //     to: "$email",
-            //     body: "${JOB_NAME}.${BUILD_NUMBER} FAILED"
-            // )
+    }
+    post {
+        failure {
             slackSend(
                 channel: "${SLACK_CHANNEL}",
                 color: 'danger',
                 message: "BUILD FAILED: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})"
             )
-            }
-            success {
-            // emailext(
-            //     subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
-            //     mimeType: 'text/html',
-            //     to: "$email",
-            //     body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
-            // )
+        }
+        success {
             slackSend(
                 channel: "${SLACK_CHANNEL}",
                 color: 'good',
                 message: "BUILD SUCCESSFUL: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})"
             )
-            }
-            always {
+        }
+        always {
             sh '''
                 docker compose down || true
             '''
-            }
+        }
     }
-    }
-
 }

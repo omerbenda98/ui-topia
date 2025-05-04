@@ -15,6 +15,7 @@ pipeline {
     }
     stages {
         stage('Build Docker Image') {
+            // when { not { branch 'main' } }
             steps {
                 sh '''
                     docker build -t ${IMAGE_NAME}:${VERSION} .
@@ -23,6 +24,7 @@ pipeline {
             }
         }
         stage('Run app with Docker compose') {
+            // when { not { branch 'main' } }
             steps {
                 sh '''
                     docker compose down || true
@@ -32,6 +34,7 @@ pipeline {
         }
         stage('Run Tests') {
             steps {
+                // when { not { branch 'main' } }
                 sh '''
                     python3 -m venv .venv
                     . .venv/bin/activate
@@ -41,6 +44,7 @@ pipeline {
             }
         }
         stage('Push Docker Image') {
+            // when { not { branch 'main' } }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                     script {
@@ -53,7 +57,7 @@ pipeline {
             }
         }
         stage('Deploy to Staging') {
-            when { not { branch 'main' } }
+            // when { not { branch 'main' } }
             steps {
                 withCredentials([
                     string(credentialsId: 'mongodb-uri', variable: 'MONGODB_URI'),

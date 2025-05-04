@@ -27,7 +27,7 @@ sudo apt-get install -y unzip wget
 
 # Install ChromeDriver directly for Chrome 135
 # Using a direct approach with a known URL pattern
-wget https://storage.googleapis.com/chrome-for-testing-public/135.0.7049.114/linux64/chromedriver-linux64.zip
+wget https://storage.googleapis.com/chrome-for-testing-public/136.0.7103.59/linux64/chromedriver-linux64.zip
 unzip chromedriver-linux64.zip
 sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
 sudo chmod +x /usr/local/bin/chromedriver

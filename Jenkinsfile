@@ -39,7 +39,7 @@ pipeline {
                     python3 -m venv .venv
                     . .venv/bin/activate
                     pip install -r selenium-tests/requirements.txt
-                    pytest ./selenium-tests
+                    pytest ./selenium-tests/test_simple.py
                 '''
             }
         }

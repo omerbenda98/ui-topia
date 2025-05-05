@@ -101,7 +101,7 @@ pipeline {
                 ]) {
                     sshagent(credentials: ['ssh']) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "\
+                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_PROD} "\
                             # Stop and remove existing container if it exists
                             docker stop ${CONTAINER_NAME} 2>/dev/null || true
                             docker rm ${CONTAINER_NAME} 2>/dev/null || true

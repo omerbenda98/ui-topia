@@ -65,7 +65,7 @@ pipeline {
                     string(credentialsId: 'google-id', variable: 'GOOGLE_ID'),
                     string(credentialsId: 'google-client-secret', variable: 'GOOGLE_CLIENT_SECRET')
                 ]) {
-                    sshagent(credentials: ['node1']) {
+                    sshagent(credentials: ['ssh']) {
                         sh """
                             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_STAGE} "\
                             # Stop and remove existing container if it exists

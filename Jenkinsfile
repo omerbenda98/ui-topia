@@ -33,8 +33,8 @@ pipeline {
             }
         }
         stage('Run Tests') {
+            when { not { branch 'main' } }
             steps {
-                when { not { branch 'main' } }
                 sh '''
                     python3 -m venv .venv
                     . .venv/bin/activate

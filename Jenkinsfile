@@ -9,7 +9,7 @@ pipeline {
         SLACK_CHANNEL = '#devops'
         REMOTE_USER = 'ubuntu'
         REMOTE_HOST = ''
-        REMOTE_HOST_STAGE = '3.93.213.72'  // Add your staging server IP
+        REMOTE_HOST_STAGE = '54.92.212.135'  // Add your staging server IP
         DB_HOST = 'db'
         CONTAINER_NAME = 'ui_topia'
     }

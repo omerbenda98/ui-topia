@@ -163,7 +163,7 @@ pipeline {
             slackSend(
                 channel: "${SLACK_CHANNEL}",
                 color: 'good',
-                message: "BUILD SUCCESSFUL: job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})"
+                message: "BUILD SUCCESSFUL: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})"
             )
         }
         always {

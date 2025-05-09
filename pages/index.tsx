@@ -106,7 +106,7 @@ const Home: React.FC = () => {
           <p className="description">
             UI-TOPIa is an open-source UI Components app for the modern world to
             discover, create, and share creative Components using only html and
-            css
+            CSS
           </p>
           <TypeSelect onTypeSelect={handleTypeSelect} />
           <Feed

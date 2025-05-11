@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # URL for testing
-BASE_URL = os.getenv("TEST_BASE_URL", "http://54.92.212.135:3000")
+BASE_URL = os.getenv("TEST_BASE_URL", "http://172.31.83.109:3000")
 
 class SimpleAppLoadTest(unittest.TestCase):
     def setUp(self):

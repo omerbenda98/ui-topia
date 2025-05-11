@@ -31,6 +31,16 @@ class SimpleAppLoadTest(unittest.TestCase):
         options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1920,1080")
         
+
+        # Additional options to prevent crashes
+        options.add_argument("--disable-extensions")
+        options.add_argument("--disable-background-timer-throttling")
+        options.add_argument("--disable-backgrounding-occluded-windows")
+        options.add_argument("--disable-renderer-backgrounding")
+        options.add_argument("--disable-features=TranslateUI")
+        options.add_argument("--disable-ipc-flooding-protection")
+        options.add_argument("--memory-pressure-off")
+        options.add_argument("--max_old_space_size=4096")
         self.driver = webdriver.Chrome(options=options)
         
         # Increase timeouts for better reliability

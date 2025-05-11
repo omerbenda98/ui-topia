@@ -96,31 +96,44 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GH_TOKEN')]) {
                     script {
-                        def response = sh(
-                            script: """
-                                curl -s -H "Authorization: token ${GH_TOKEN}" \
-                                -H "Accept: application/vnd.github.v3+json" \
-                                https://api.github.com/repos/omerbenda98/ui_topia
-                            """,
-                            returnStdout: true
+                        def prTitle = "Merge ${BRANCH_NAME} into main #${VERSION}"
+                        def prBody = "This PR merges changes from ${BRANCH_NAME} into main."
+                        def prUrl = "https://api.github.com/repos/omerbenda98/ui_topia/pulls"
+                        def json = """
+                        {
+                            "title": "${prTitle}",
+                            "head": "${BRANCH_NAME}",
+                            "base": "main",
+                            "body": "${prBody}"
+                        }
+                        """
+                        sh """
+                            curl -X POST -H "Authorization: token ${GH_TOKEN}" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            -d '${json}' ${prUrl}
+                        """
+                          // Add -v for verbose output and -w to capture HTTP status
+                def result = sh (
+                    script: """
+                        curl -v -w "\\nHTTP_STATUS:%{http_code}" -X POST \
+                        -H "Authorization: token ${GH_TOKEN}" \
+                        -H "Accept: application/vnd.github.v3+json" \
+                        -H "Content-Type: application/json" \
+                        -d '${json}' ${prUrl}
+                    """,
+                    returnStdout: true
                 )
-                echo "Repository info: ${response}"
-                        // def prTitle = "Merge ${BRANCH_NAME} into main #${VERSION}"
-                        // def prBody = "This PR merges changes from ${BRANCH_NAME} into main."
-                        // def prUrl = "https://api.github.com/repos/omerbenda98/ui_topia/pulls"
-                        // def json = """
-                        // {
-                        //     "title": "${prTitle}",
-                        //     "head": "${BRANCH_NAME}",
-                        //     "base": "main",
-                        //     "body": "${prBody}"
-                        // }
-                        // """
-                        // sh """
-                        //     curl -X POST -H "Authorization: token ${GH_TOKEN}" \
-                        //     -H "Accept: application/vnd.github.v3+json" \
-                        //     -d '${json}' ${prUrl}
-                        // """
+                
+                echo "Full curl output:"
+                echo result
+                
+                // Check if HTTP status is 201 (created)
+                if (result.contains("HTTP_STATUS:201")) {
+                    echo "✅ Pull Request created successfully!"
+                } else {
+                    echo "❌ PR creation might have failed"
+                    echo "Check the output above for details"
+                }
                     }
                 }
             }

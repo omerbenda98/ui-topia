@@ -112,28 +112,6 @@ pipeline {
                             -H "Accept: application/vnd.github.v3+json" \
                             -d '${json}' ${prUrl}
                         """
-                          // Add -v for verbose output and -w to capture HTTP status
-                def result = sh (
-                    script: """
-                        curl -v -w "\\nHTTP_STATUS:%{http_code}" -X POST \
-                        -H "Authorization: token ${GH_TOKEN}" \
-                        -H "Accept: application/vnd.github.v3+json" \
-                        -H "Content-Type: application/json" \
-                        -d '${json}' ${prUrl}
-                    """,
-                    returnStdout: true
-                )
-                
-                echo "Full curl output:"
-                echo result
-                
-                // Check if HTTP status is 201 (created)
-                if (result.contains("HTTP_STATUS:201")) {
-                    echo "✅ Pull Request created successfully!"
-                } else {
-                    echo "❌ PR creation might have failed"
-                    echo "Check the output above for details"
-                }
                     }
                 }
             }

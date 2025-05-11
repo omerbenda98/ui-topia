@@ -144,7 +144,7 @@ pipeline {
                               -e GOOGLE_CLIENT_SECRET='${GOOGLE_CLIENT_SECRET}' \
                               -p 3000:3000 \
                               --restart always \
-                              ${IMAGE_NAME}:latest"
+                              ${IMAGE_NAME}:${VERSION}"
                         """
                     }
                 }

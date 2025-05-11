@@ -98,7 +98,7 @@ pipeline {
                     script {
                         def prTitle = "Merge ${BRANCH_NAME} into main #${VERSION}"
                         def prBody = "This PR merges changes from ${BRANCH_NAME} into main."
-                        def prUrl = "https://api.github.com/repos/omerbenda98/ui_topia/pulls"
+                        def prUrl = "https://api.github.com/repos/omerbenda98/ui-topia/pulls"
                         def json = """
                         {
                             "title": "${prTitle}",

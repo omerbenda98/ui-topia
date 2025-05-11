@@ -96,22 +96,31 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GH_TOKEN')]) {
                     script {
-                        def prTitle = "Merge ${BRANCH_NAME} into main #${VERSION}"
-                        def prBody = "This PR merges changes from ${BRANCH_NAME} into main."
-                        def prUrl = "https://api.github.com/repos/omerbenda98/ui_topia/pulls"
-                        def json = """
-                        {
-                            "title": "${prTitle}",
-                            "head": "${BRANCH_NAME}",
-                            "base": "main",
-                            "body": "${prBody}"
-                        }
-                        """
-                        sh """
-                            curl -X POST -H "Authorization: token ${GH_TOKEN}" \
-                            -H "Accept: application/vnd.github.v3+json" \
-                            -d '${json}' ${prUrl}
-                        """
+                        def response = sh(
+                            script: """
+                                curl -s -H "Authorization: token ${GH_TOKEN}" \
+                                -H "Accept: application/vnd.github.v3+json" \
+                                https://api.github.com/repos/omerbenda98/ui_topia
+                            """,
+                            returnStdout: true
+                )
+                echo "Repository info: ${response}"
+                        // def prTitle = "Merge ${BRANCH_NAME} into main #${VERSION}"
+                        // def prBody = "This PR merges changes from ${BRANCH_NAME} into main."
+                        // def prUrl = "https://api.github.com/repos/omerbenda98/ui_topia/pulls"
+                        // def json = """
+                        // {
+                        //     "title": "${prTitle}",
+                        //     "head": "${BRANCH_NAME}",
+                        //     "base": "main",
+                        //     "body": "${prBody}"
+                        // }
+                        // """
+                        // sh """
+                        //     curl -X POST -H "Authorization: token ${GH_TOKEN}" \
+                        //     -H "Accept: application/vnd.github.v3+json" \
+                        //     -d '${json}' ${prUrl}
+                        // """
                     }
                 }
             }

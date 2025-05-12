@@ -57,7 +57,7 @@ pipeline {
         stage('Update Staging Version in GitOps Repo') {
             when { not { branch 'main' } }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USERNAME')]) {
+                withCredentials([string(credentialsId: 'github', passwordVariable: 'GH_TOKEN')]) {
                     script {
                         sh """
                             rm -rf gitops

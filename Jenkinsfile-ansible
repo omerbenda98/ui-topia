@@ -6,11 +6,8 @@ pipeline {
         IMAGE_NAME = 'omerbenda98/ui_topia'
         VERSION = "${BUILD_NUMBER}"
         email = 'omerbenda98@gmail.com'
-        SLACK_CHANNEL = '#devops'
-        REMOTE_USER = 'ubuntu'
-        GITOPS_REPO = "omerbenda98/uitopia-cd"  // Create this repository first!
-        CONTAINER_NAME = 'ui_topia'
-    }
+        GITOPS_REPO = "omerbenda98/uitopia-cd"
+ }
     stages {
         stage('Build Docker Image') {
             when { not { branch 'main' } }
@@ -63,10 +60,11 @@ pipeline {
                             rm -rf gitops
                             git clone https://${GH_TOKEN}@github.com/${GITOPS_REPO} gitops
                             cd gitops
+                            sed -i 's/^stage_tag:.*/stage_tag: ${VERSION}/' ansible/group_vars/all.yml
                             echo "${VERSION}" > stage_version.txt
                             git config user.name "jenkins"
                             git config user.email "ci@jenkins.local"
-                            git add stage_version.txt
+                            git add ansible/group_vars/all.yml
                             git commit -m "Update staging version to ${VERSION}"
                             git push origin main
                         """
@@ -121,10 +119,11 @@ pipeline {
                             rm -rf gitops
                             git clone https://${GH_TOKEN}@github.com/${GITOPS_REPO} gitops
                             cd gitops
+                            sed -i 's/^prod_tag:.*/prod_tag: ${NEW_VERSION}/' ansible/group_vars/all.yml
                             echo "${NEW_VERSION}" > production_version.txt
                             git config user.name "jenkins"
                             git config user.email "ci@jenkins.local"
-                            git add production_version.txt
+                            git add ansible/group_vars/all.yml
                             git commit -m "Update production version to ${NEW_VERSION}"
                             git push origin main
                         """
@@ -136,17 +135,27 @@ pipeline {
     post {
         failure {
             slackSend(
-                channel: "${SLACK_CHANNEL}",
+                channel: "#devops",
                 color: 'danger',
                 message: "BUILD FAILED: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})"
             )
+            // emailext(
+            //     subject: "Build Failed: Job '${JOB_NAME}' [${BUILD_NUMBER}]",
+            //     body: "Build Failed: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})",
+            //     to: "${email}"
+            // )
         }
         success {
             slackSend(
-                channel: "${SLACK_CHANNEL}",
+                channel: "#devops",
                 color: 'good',
                 message: "BUILD SUCCESSFUL: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})"
             )
+            // emailext(
+            //     subject: "Build Successful: Job '${JOB_NAME}' [${BUILD_NUMBER}]",
+            //     body: "Build Successful: Job '${JOB_NAME}' [${BUILD_NUMBER}] (${BUILD_URL})",
+            //     to: "${email}"
+            // )
         }
         always {
             sh '''

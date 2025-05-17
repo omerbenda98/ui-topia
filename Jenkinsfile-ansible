@@ -114,7 +114,7 @@ pipeline {
                     env.NEW_VERSION = version
                     echo "📦 Extracted version from commit: ${env.NEW_VERSION}"
                     
-                    withCredentials([usernamePassword(credentialsId: 'github_token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USERNAME')]) {
+                    withCredentials([string(credentialsId: 'github', variable: 'GH_TOKEN')]) {
                         sh """
                             rm -rf gitops
                             git clone https://${GH_TOKEN}@github.com/${GITOPS_REPO} gitops

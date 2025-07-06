@@ -100,7 +100,7 @@ jobs:
       - name: Update Staging Version in GitOps Repo
         env:
           VERSION: ${{ github.run_number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
         run: |
           # Clone GitOps repo
           rm -rf gitops
@@ -131,7 +131,7 @@ jobs:
       - name: Create Pull Request to Main
         env:
           VERSION: ${{ github.run_number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
         run: |
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           PR_TITLE="Merge ${BRANCH_NAME} into main @${VERSION}"
@@ -186,7 +186,7 @@ jobs:
       - name: Update Production Version in GitOps Repo
         env:
           NEW_VERSION: ${{ steps.extract_version.outputs.version }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
         run: |
           # Clone GitOps repo
           rm -rf gitops

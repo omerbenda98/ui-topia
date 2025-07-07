@@ -1,0 +1,254 @@
+# .github/workflows/ci-cd.yml
+# This goes in your ui-topia app repository
+name: UI-Topia CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+env:
+  IMAGE_NAME: omerbenda98/ui_topia
+  GITOPS_REPO: omerbenda98/uitopia-cd
+
+jobs:
+  # Runs on all branches except main
+  build-test-staging:
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        env:
+          VERSION: ${{ github.run_number }}
+        run: |
+          docker build -t ${IMAGE_NAME}:${VERSION} .
+          docker tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
+
+      - name: Start application for testing
+        env:
+          VERSION: ${{ github.run_number }}
+        run: |
+          # Create a simple docker-compose for testing
+          cat > docker-compose.test.yml << EOF
+          version: '3.8'
+          services:
+            app:
+              image: ${IMAGE_NAME}:${VERSION}
+              ports:
+                - "3000:3000"
+              environment:
+                - NODE_ENV=test
+          EOF
+
+          # Start the application
+          docker compose -f docker-compose.test.yml up -d
+
+          # Wait for app to be ready
+          echo "Waiting for application to start..."
+          for i in {1..30}; do
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+              echo "Application is ready!"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 10
+          done
+
+      - name: Setup Python for Tests
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Run Selenium Tests
+        run: |
+          # Create virtual environment and install dependencies
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r selenium-tests/requirements.txt
+
+          # Run tests
+          pytest ./selenium-tests/test_simple.py --verbose
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker Image
+        env:
+          VERSION: ${{ github.run_number }}
+        run: |
+          docker push ${IMAGE_NAME}:${VERSION}
+          docker push ${IMAGE_NAME}:latest
+
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh
+
+      - name: Update Staging Version in GitOps Repo
+        env:
+          VERSION: ${{ github.run_number }}
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+        run: |
+          # Clone GitOps repo
+          rm -rf gitops
+          git clone https://${GH_TOKEN}@github.com/${GITOPS_REPO} gitops
+          cd gitops
+
+          # Install yq for YAML editing
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+          # Update staging values file
+          yq eval '.app.tag = env(VERSION)' -i helm-charts/uitopia-app/values-staging.yaml
+          echo "${VERSION}" > stage_version.txt
+
+          # Commit and push
+          git config user.name "github-actions[bot]"
+          git config user.email "actions@github.com"
+          git add .
+
+          # Only commit if there are changes
+          if ! git diff --staged --quiet; then
+            git commit -m "Update staging version to ${VERSION}"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Create Pull Request to Main
+        env:
+          VERSION: ${{ github.run_number }}
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          PR_TITLE="Merge ${BRANCH_NAME} into main @${VERSION}"
+          PR_BODY="This PR merges changes from ${BRANCH_NAME} into main with version ${VERSION}"
+
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --head "${BRANCH_NAME}" --base "main" --repo "omerbenda98/ui-topia" --json number --jq '.[0].number')
+
+          if [ "$EXISTING_PR" = "null" ] || [ -z "$EXISTING_PR" ]; then
+            # Create new PR
+            gh pr create \
+              --title "${PR_TITLE}" \
+              --body "${PR_BODY}" \
+              --head "${BRANCH_NAME}" \
+              --base "main" \
+              --repo "omerbenda98/ui-topia"
+            echo "✅ Created new PR"
+          else
+            echo "ℹ️  PR already exists: #${EXISTING_PR}"
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose -f docker-compose.test.yml down || true
+          docker system prune -f
+
+  # Runs only on main branch
+  deploy-production:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract Version from Commit Message
+        id: extract_version
+        run: |
+          # Extract version number from the latest Git commit message
+          VERSION=$(git log -1 --pretty=%B | grep -oE '@[0-9]+' | tr -d '@')
+
+          if [ -z "$VERSION" ]; then
+            echo "❌ ERROR: No version number found in commit message."
+            echo "Make sure your commit message includes @<number> (e.g., 'Fix bug @123')"
+            exit 1
+          fi
+
+          echo "📦 Extracted version from commit: ${VERSION}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Update Production Version in GitOps Repo
+        env:
+          NEW_VERSION: ${{ steps.extract_version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+        run: |
+          # Clone GitOps repo
+          rm -rf gitops
+          git clone https://${GH_TOKEN}@github.com/${GITOPS_REPO} gitops
+          cd gitops
+
+          # Install yq for YAML editing
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+          # Update production values file
+          yq eval '.app.tag = env(NEW_VERSION)' -i helm-charts/uitopia-app/values-production.yaml
+          echo "${NEW_VERSION}" > production_version.txt
+
+          # Commit and push
+          git config user.name "github-actions[bot]"
+          git config user.email "actions@github.com"
+          git add .
+
+          # Only commit if there are changes
+          if ! git diff --staged --quiet; then
+            git commit -m "Update production version to ${NEW_VERSION}"
+            git push origin main
+            echo "✅ Updated production to version ${NEW_VERSION}"
+          else
+            echo "ℹ️  Production already at version ${NEW_VERSION}"
+          fi
+
+  # Notification job
+  notify:
+    runs-on: ubuntu-latest
+    needs: [build-test-staging, deploy-production]
+    if: always()
+
+    steps:
+      - name: Slack Notification - Success
+        if: |
+          (needs.build-test-staging.result == 'success' || needs.build-test-staging.result == 'skipped') &&
+          (needs.deploy-production.result == 'success' || needs.deploy-production.result == 'skipped')
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: "#devops"
+          text: |
+            ✅ BUILD SUCCESSFUL: ${{ github.repository }} [${{ github.run_number }}]
+            🔗 ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            🌐 Check your applications:
+            - Staging: https://staging.benda.wiki
+            - Production: https://benda.wiki
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Slack Notification - Failure
+        if: |
+          needs.build-test-staging.result == 'failure' ||
+          needs.deploy-production.result == 'failure'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: "#devops"
+          text: |
+            ❌ BUILD FAILED: ${{ github.repository }} [${{ github.run_number }}]
+            🔗 ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

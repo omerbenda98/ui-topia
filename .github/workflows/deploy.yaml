@@ -199,7 +199,7 @@ jobs:
 
           # Update production values file
           yq eval '.app.tag = env(NEW_VERSION)' -i helm-charts/uitopia-app/values-production.yaml
-          echo "${NEW_VERSION}" > production_version.txt
+
 
           # Commit and push
           git config user.name "github-actions[bot]"

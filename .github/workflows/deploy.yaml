@@ -139,7 +139,6 @@ jobs:
               --body "🚀 Ready to deploy version ${VERSION} to production after successful staging tests" \
               --head "dev" \
               --base "main" \
-              --label "deployment"
             echo "✅ Created new PR from dev to main"
           else
             echo "ℹ️  PR already exists: #${EXISTING_PR}"

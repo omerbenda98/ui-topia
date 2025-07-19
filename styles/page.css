@@ -20,7 +20,7 @@
 }
 
 .gradient-text {
-  background: linear-gradient(to right, orange, rgb(0, 30, 255));
+  background: linear-gradient(to right, rgb(144, 0, 255), rgb(0, 30, 255));
   color: rgba(255, 255, 255, 0.937);
   padding: 5px;
   text-align: center;

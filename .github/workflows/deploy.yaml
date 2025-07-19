@@ -112,7 +112,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
 
           # Update staging values file
-          yq eval '.app.tag = env(VERSION)' -i helm-charts/uitopia-app/values-staging.yaml
+          yq eval '.app.tag = env(VERSION)' -i k8s/helm-charts/uitopia-app/values-staging.yaml
           echo "${VERSION}" > stage_version.txt
 
           # Commit and push
@@ -198,7 +198,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
 
           # Update production values file
-          yq eval '.app.tag = env(NEW_VERSION)' -i helm-charts/uitopia-app/values-production.yaml
+          yq eval '.app.tag = env(NEW_VERSION)' -i k8s/helm-charts/uitopia-app/values-production.yaml
 
 
           # Commit and push

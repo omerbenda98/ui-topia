@@ -1,5 +1,4 @@
 # .github/workflows/ci-cd.yml
-# This goes in your ui-topia app repository
 name: UI-Topia CI/CD Pipeline
 
 on:
@@ -13,10 +12,10 @@ env:
   GITOPS_REPO: omerbenda98/uitopia-cd
 
 jobs:
-  # Runs on all branches except main
+  # Runs on dev branch and PRs (not main)
   build-test-staging:
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/main'
+    if: github.ref == 'refs/heads/dev' || github.event_name == 'pull_request'
 
     steps:
       - name: Checkout code
@@ -78,26 +77,22 @@ jobs:
           pytest ./selenium-tests/test_simple.py --verbose
 
       - name: Login to Docker Hub
+        if: github.ref == 'refs/heads/dev' # Only push on dev branch, not PRs
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker Image
+        if: github.ref == 'refs/heads/dev' # Only push on dev branch, not PRs
         env:
           VERSION: ${{ github.run_number }}
         run: |
           docker push ${IMAGE_NAME}:${VERSION}
           docker push ${IMAGE_NAME}:latest
 
-      - name: Install GitHub CLI
-        run: |
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt update
-          sudo apt install gh
-
       - name: Update Staging Version in GitOps Repo
+        if: github.ref == 'refs/heads/dev' # Only update staging on dev branch
         env:
           VERSION: ${{ github.run_number }}
           GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
@@ -129,28 +124,29 @@ jobs:
           fi
 
       - name: Create Pull Request to Main
+        if: github.ref == 'refs/heads/dev' # Only create PR from dev branch
         env:
           VERSION: ${{ github.run_number }}
-          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Use GITHUB_TOKEN instead
         run: |
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          PR_TITLE="Merge ${BRANCH_NAME} into main @${VERSION}"
-          PR_BODY="This PR merges changes from ${BRANCH_NAME} into main with version ${VERSION}"
-
-          # Check if PR already exists
-          EXISTING_PR=$(gh pr list --head "${BRANCH_NAME}" --base "main" --repo "omerbenda98/ui-topia" --json number --jq '.[0].number')
+          # Check if PR already exists from dev to main
+          EXISTING_PR=$(gh pr list --head "dev" --base "main" --state open --json number --jq '.[0].number')
 
           if [ "$EXISTING_PR" = "null" ] || [ -z "$EXISTING_PR" ]; then
-            # Create new PR
+            # Create new PR from dev to main
             gh pr create \
-              --title "${PR_TITLE}" \
-              --body "${PR_BODY}" \
-              --head "${BRANCH_NAME}" \
+              --title "Deploy version ${VERSION} to production" \
+              --body "🚀 Ready to deploy version ${VERSION} to production after successful staging tests" \
+              --head "dev" \
               --base "main" \
-              --repo "omerbenda98/ui-topia"
-            echo "✅ Created new PR"
+              --label "deployment"
+            echo "✅ Created new PR from dev to main"
           else
             echo "ℹ️  PR already exists: #${EXISTING_PR}"
+            # Update the existing PR
+            gh pr edit ${EXISTING_PR} \
+              --title "Deploy version ${VERSION} to production" \
+              --body "🚀 Ready to deploy version ${VERSION} to production after successful staging tests"
           fi
 
       - name: Cleanup
@@ -159,38 +155,41 @@ jobs:
           docker compose -f docker-compose.test.yml down || true
           docker system prune -f
 
-  # Runs only on main branch
+  # Runs only on main branch (when PR is merged)
   deploy-production:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract Version from Commit Message
-        id: extract_version
+      - name: Get Latest Staging Version
+        id: get_version
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
         run: |
-          # Extract version number from the latest Git commit message
-          VERSION=$(git log -1 --pretty=%B | grep -oE '@[0-9]+' | tr -d '@')
+          # Clone GitOps repo to get the latest staging version
+          rm -rf gitops
+          git clone https://${GH_TOKEN}@github.com/${GITOPS_REPO} gitops
+          cd gitops
 
-          if [ -z "$VERSION" ]; then
-            echo "❌ ERROR: No version number found in commit message."
-            echo "Make sure your commit message includes @<number> (e.g., 'Fix bug @123')"
+          # Get version from staging version file
+          if [ -f "stage_version.txt" ]; then
+            VERSION=$(cat stage_version.txt)
+            echo "📦 Found staging version: ${VERSION}"
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          else
+            echo "❌ ERROR: No staging version found"
             exit 1
           fi
 
-          echo "📦 Extracted version from commit: ${VERSION}"
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-
       - name: Update Production Version in GitOps Repo
         env:
-          NEW_VERSION: ${{ steps.extract_version.outputs.version }}
+          NEW_VERSION: ${{ steps.get_version.outputs.version }}
           GH_TOKEN: ${{ secrets.GITOPS_TOKEN }}
         run: |
-          # Clone GitOps repo
-          rm -rf gitops
-          git clone https://${GH_TOKEN}@github.com/${GITOPS_REPO} gitops
+          # We already have the gitops repo from previous step
           cd gitops
 
           # Install yq for YAML editing
@@ -200,7 +199,6 @@ jobs:
           # Update production values file
           yq eval '.app.tag = env(NEW_VERSION)' -i k8s/helm-charts/uitopia-app/values-production.yaml
 
-
           # Commit and push
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
@@ -208,7 +206,7 @@ jobs:
 
           # Only commit if there are changes
           if ! git diff --staged --quiet; then
-            git commit -m "Update production version to ${NEW_VERSION}"
+            git commit -m "🚀 Deploy version ${NEW_VERSION} to production"
             git push origin main
             echo "✅ Updated production to version ${NEW_VERSION}"
           else

@@ -127,7 +127,7 @@ jobs:
         if: github.ref == 'refs/heads/dev' # Only create PR from dev branch
         env:
           VERSION: ${{ github.run_number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Use GITHUB_TOKEN instead
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN }} # Use GITHUB_TOKEN instead
         run: |
           # Check if PR already exists from dev to main
           EXISTING_PR=$(gh pr list --head "dev" --base "main" --state open --json number --jq '.[0].number')
